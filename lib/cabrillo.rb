@@ -2,7 +2,7 @@
 # Cabrillo - Amateur Radio Log Library
 #
 # This library handles the parsing and generation of the Cabrillo ham radio
-# logging format, commonly used by the ARRL for contesting. 
+# logging format, commonly used by the ARRL for contesting.
 #
 # Written by Ricky Elrod (github: @CodeBlock) and released an MIT license.
 # https://www.github.com/CodeBlock/cabrillo-gem
@@ -44,9 +44,9 @@ class InvalidDataError < StandardError; end
 
 class Cabrillo
   @raise_on_invalid_data = true
-  
+
   CABRILLO_VERSION = '3.0' # The current version of the spec, our default.
-  
+
   # Public: Creates an instance of Cabrillo from a Hash of log data
   #
   # options - A Hash which contains data from a cabrillo log
@@ -211,7 +211,7 @@ class Cabrillo
       # Store the exchange/everything else into an array (using splat) for
       #   later.
       qso[:frequency], qso[:mode], date, time, *exchange = qso_line.split
-      
+
       # Parse the date and time into a Time object.
       qso[:time] = Time.parse(DateTime.strptime("#{date} #{time}", '%Y-%m-%d %H%M').to_s)
 
@@ -232,13 +232,21 @@ class Cabrillo
         qso[:exchange][:sent][:serial_number] = exchange.shift
         qso[:exchange][:sent][:precedence] = exchange.shift
         qso[:exchange][:sent][:check] = exchange.shift
-        qso[:exchange][:sent][:arrl_section] = exchange.shift        
+        qso[:exchange][:sent][:arrl_section] = exchange.shift
 
         qso[:exchange][:received][:callsign] = exchange.shift
         qso[:exchange][:received][:serial_number] = exchange.shift
         qso[:exchange][:received][:precedence] = exchange.shift
         qso[:exchange][:received][:check] = exchange.shift
         qso[:exchange][:received][:arrl_section] = exchange.shift
+      when 'NAQP-CW', 'NAQP-SSB', 'NAQP-RTTY'
+        qso[:exchange][:sent][:name] = exchange.shift
+        qso[:exchange][:sent][:section] = exchange.shift
+
+        qso[:exchange][:received][:callsign] = exchange.shift
+        qso[:exchange][:received][:name] = exchange.shift
+        qso[:exchange][:received][:section] = exchange.shift
+        qso[:exchange][:received][:transmitter_id] = exchange.shift
       end
 
       qso
